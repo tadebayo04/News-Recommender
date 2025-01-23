@@ -1,17 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UserBase(BaseModel):
-    email: str
+    email: EmailStr  # Use EmailStr for better validation
     first_name: str
     last_name: str
 
 class UserCreate(UserBase):
     password: str
 
-class User(BaseModel):
+class User(UserBase):
     id: int
     username: str
-    email: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Updated for Pydantic v2 compatibility

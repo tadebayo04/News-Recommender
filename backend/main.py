@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 
 from backend import crud
-from backend.models.models import User
+from backend.models.models import User, Article
 from backend.database import SessionLocal, engine, get_db
 from backend.database import Base
 
@@ -29,15 +29,36 @@ Base.metadata.create_all(bind=engine)
 NEWS_API_KEY = "db972e6bed9445579c2262b952516087"
 NEWS_API_URL = "https://newsapi.org/v2/top-headlines"
 
+from fastapi import FastAPI, Query
+import requests
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Allow frontend access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React frontend address
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# NewsAPI Configuration
+NEWS_API_KEY = "db972e6bed9445579c2262b952516087"
+NEWS_API_URL = "https://newsapi.org/v2/everything"
+
 @app.get("/api/news")
-def fetch_news():
+def fetch_news(query: str = Query(..., min_length=3, description="Search news by topic")):
+    """Fetch personalized news based on user interest."""
     params = {
         "apiKey": NEWS_API_KEY,
-        "country": "us",  # Fetch news from the US; change based on preference
-        "category": "technology",  # Change category (business, sports, health, etc.)
-        "pageSize": 10  # Number of articles to fetch
+        "q": query,  # User inputted search query
+        "language": "en",
+        "sortBy": "relevancy",
+        "pageSize": 10
     }
-    
+
     response = requests.get(NEWS_API_URL, params=params)
 
     if response.status_code == 200:
@@ -46,14 +67,15 @@ def fetch_news():
             {
                 "title": article["title"],
                 "description": article["description"],
-                "image": article["urlToImage"] or "https://via.placeholder.com/150",
+                "image": article.get("urlToImage", "https://via.placeholder.com/150"),
                 "url": article["url"]
             }
-            for article in news_data if article["title"] and article["urlToImage"]
+            for article in news_data if article["title"] and article.get("urlToImage")
         ]
         return formatted_news
 
     return {"error": "Unable to fetch news"}
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -82,3 +104,15 @@ async def login(
             detail="Incorrect email or password"
         )
     return {"message": "Login successful"}
+
+@app.post("/interests")
+async def save_interests(interests: dict, db: Session = Depends(get_db)):
+    # Here you would save the interests to the database
+    # For example, you could associate them with the logged-in user
+    return {"message": "Interests saved successfully"}
+
+@app.post("/personalized-news")
+async def get_personalized_news(interests: dict, db: Session = Depends(get_db)):
+    user_interests = interests.get("interests", [])
+    articles = db.query(Article).filter(Article.category.in_(user_interests)).all()
+    return articles

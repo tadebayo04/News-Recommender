@@ -1,0 +1,37 @@
+.news-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around; /* Adjusts spacing between cards */
+}
+
+.news-card {
+  margin: 15px;
+  flex: 0 1 calc(30% - 30px); /* Adjusts the width of each card */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white; /* Card background color */
+  text-align: center; /* Center text within the card */
+}
+
+.news-card img {
+  width: 100%; /* Full width for images */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px 8px 0 0; /* Rounded corners for the top of the card */
+}
+
+.refresh-button {
+  background-color: #007BFF; /* Button background color */
+  color: white; /* Button text color */
+  border: none; /* No border */
+  padding: 10px 15px; /* Padding for the button */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-bottom: 15px; /* Space below the button */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.refresh-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+} 

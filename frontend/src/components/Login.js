@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-function Login() {
+function Login({ setIsAuthenticated }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -16,19 +16,15 @@ function Login() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                })
+                body: JSON.stringify({ email, password })
             });
-
-            const data = await response.json();
 
             if (response.ok) {
                 alert('Login successful!');
+                setIsAuthenticated(true);
                 navigate('/home');
             } else {
-                alert(typeof data.detail === 'string' ? data.detail : 'Login failed. Please try again.');
+                alert('Login failed. Please try again.');
             }
         } catch (error) {
             alert('Connection error. Please check your internet connection and try again.');

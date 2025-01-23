@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #3B5F8A;
+    color: white;
+}
+
+.interests-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px;
+    background-color: white;
+    color: #3B5F8A;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+} 
