@@ -1,38 +1,69 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
-const Login = () => {
-    const [username, setUsername] = useState('');
+function Login() {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         try {
-            const response = await axios.post('http://localhost:8000/login', {
-                username,
-                password
+            const response = await fetch('http://localhost:8000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
             });
-            console.log(response.data);
-            alert('Login successful');
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Login successful!');
+                navigate('/home');
+            } else {
+                alert(typeof data.detail === 'string' ? data.detail : 'Login failed. Please try again.');
+            }
         } catch (error) {
-            console.error(error);
-            alert('Login failed');
+            alert('Connection error. Please check your internet connection and try again.');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Username:</label>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <div className="container">
+            <form onSubmit={handleSubmit} className="login-form">
+                <div className="input-field">
+                    <input 
+                        type="email" 
+                        placeholder="Email" 
+                        required 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className="input-field">
+                    <input 
+                        type="password" 
+                        placeholder="Password" 
+                        required 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                <button type="submit" className="login-btn">Login</button>
+            </form>
+            <div className="logo-section">
+                <img src="/logo.png" alt="News System Logo" className="logo" />
+                <h1 className="brand">NEWSSYSTEM</h1>
             </div>
-            <div>
-                <label>Password:</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
-            <button type="submit">Login</button>
-        </form>
+        </div>
     );
-};
+}
 
 export default Login;

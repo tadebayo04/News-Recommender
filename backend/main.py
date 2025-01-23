@@ -1,26 +1,29 @@
 import os
 import requests
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 
-from backend import schemas, crud
-from backend.models import models
-from backend.database import SessionLocal, engine
+from backend import crud
+from backend.models.models import User
+from backend.database import SessionLocal, engine, get_db
+from backend.database import Base
 
-models.Base.metadata.create_all(bind=engine)
-
+# Create FastAPI app 
 app = FastAPI()
 
-# Allow frontend access
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to specific frontend domain in production
+    allow_origins=["http://localhost:3000"],  # React app address
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 # API Key (Replace with your actual NewsAPI key)
 NEWS_API_KEY = "db972e6bed9445579c2262b952516087"
@@ -54,23 +57,28 @@ def fetch_news():
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@app.post("/register", response_model=schemas.User)
-def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+@app.post("/register")
+async def register_user(user_data: dict, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db, email=user_data["email"])
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+    return crud.create_user(db=db, user_data=user_data)
 
 @app.post("/login")
-def login_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_username(db, username=user.username)
-    if not db_user or not pwd_context.verify(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+async def login(
+    data: dict = Body(...),  # Change this to accept JSON body
+    db: Session = Depends(get_db)
+):
+    email = data.get("email")
+    password = data.get("password")
+    
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    
+    user = crud.authenticate_user(db, email, password)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password"
+        )
     return {"message": "Login successful"}

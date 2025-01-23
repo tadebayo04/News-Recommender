@@ -33,3 +33,9 @@
   font-size: 14px;
   color: #666;
 }
+
+.app-title {
+  text-align: center;
+  color: rgb(0, 0, 0);
+  margin: 20px 0;
+}
