@@ -1,103 +1,145 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Register.css';
 
-function Register() {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+const Register = () => {
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
+    const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:8000/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    password: password
-                })
+            const response = await axios.post('http://localhost:8000/register', {
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                email: formData.email,
+                password: formData.password
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (response.status === 200) {
                 alert('Registration successful! Please login.');
                 navigate('/login');
-            } else {
-                alert(data.message || data.detail || 'Registration failed. Please try again.');
             }
         } catch (error) {
-            alert('Connection error. Please check your internet connection and try again.');
+            setError(error.response?.data?.detail || 'Registration failed. Please try again.');
         }
     };
 
     return (
-        <div className="container">
-            <form onSubmit={handleSubmit} className="register-form">
-                <div className="name-row">
+        <div className="auth-container">
+            <div className="auth-card">
+                <div className="brand-section">
+                    <img src="/logo.png" alt="Logo" className="brand-logo" />
+                    <div className="brand-name">NEWS SYSTEM</div>
+                </div>
+
+                <div className="auth-header">
+                    <h1>Create Account</h1>
+                    <p>Join us to get personalized news recommendations</p>
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+
+                <form onSubmit={handleSubmit}>
+                    <div className="name-row">
+                        <div className="input-field">
+                            <input
+                                type="text"
+                                name="firstName"
+                                placeholder="First Name"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="input-field">
+                            <input
+                                type="text"
+                                name="lastName"
+                                placeholder="Last Name"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
                     <div className="input-field">
-                        <input 
-                            type="text" 
-                            placeholder="First Name" 
-                            required 
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Email Address"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
                         />
                     </div>
                     <div className="input-field">
-                        <input 
-                            type="text" 
-                            placeholder="Last Name" 
-                            required 
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Create Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                        />
+                        <div className="password-requirements">
+                            Password must be at least 8 characters long
+                        </div>
+                    </div>
+                    <div className="input-field">
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            required
                         />
                     </div>
+
+                    <div className="terms-checkbox">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            required
+                        />
+                        <label htmlFor="terms">
+                            I agree to the Terms of Service and Privacy Policy
+                        </label>
+                    </div>
+
+                    <button type="submit" className="auth-button">
+                        Create Account
+                    </button>
+                </form>
+
+                <div className="auth-links">
+                    <p>Already have an account? <Link to="/login">Sign in</Link></p>
                 </div>
-                <div className="input-field">
-                    <input 
-                        type="email" 
-                        placeholder="Email" 
-                        required 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
-                <div className="input-field">
-                    <input 
-                        type="password" 
-                        placeholder="Please enter your password" 
-                        required 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <div className="input-field">
-                    <input 
-                        type="password" 
-                        placeholder="Please confirm your password" 
-                        required 
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                </div>
-                <button type="submit" className="create-account-btn">Create Account</button>
-            </form>
-            <div className="logo-section">
-                <img src="/logo.png" alt="News System Logo" className="logo" />
-                <h1 className="brand">NEWSSYSTEM</h1>
             </div>
         </div>
     );
-}
+};
 
 export default Register;

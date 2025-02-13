@@ -1,30 +1,155 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #3B5F8A;
-    color: white;
+.interests-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.interests-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.interests-header h1 {
+    color: #2c3e50;
+    font-size: 2.2em;
+    margin-bottom: 15px;
+}
+
+.interests-header p {
+    color: #666;
+    font-size: 1.1em;
+    line-height: 1.6;
 }
 
 .interests-form {
     display: flex;
     flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.input-group input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    outline: none;
+}
+
+.input-group label {
+    position: absolute;
+    left: 15px;
+    top: -10px;
+    background: white;
+    padding: 0 5px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.interests-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.interest-chip {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+.interest-chip:hover {
+    background: #c8e6c9;
+}
+
+.interest-chip button {
+    background: none;
+    border: none;
+    color: #2e7d32;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+}
+
+.submit-button {
+    background: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.submit-button:hover {
+    background: #45a049;
+}
+
+.submit-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.suggestions {
+    margin-top: 30px;
+}
+
+.suggestions h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
-input {
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
+.suggestion-chip {
+    background: #f1f3f4;
+    color: #444;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-button {
-    padding: 10px;
-    background-color: white;
-    color: #3B5F8A;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.suggestion-chip:hover {
+    background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .interests-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .interests-header h1 {
+        font-size: 1.8em;
+    }
 } 

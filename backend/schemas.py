@@ -10,7 +10,6 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    username: str
 
     class Config:
         from_attributes = True  # Updated for Pydantic v2 compatibility
